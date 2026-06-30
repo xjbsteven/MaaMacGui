@@ -150,7 +150,10 @@ extension MAAViewModel {
             if taskChain == "Infrast" {
                 if let id = taskID(taskDetails: message.details),
                     let task = tasks[id],
-                    case .infrast(let config) = task,
+                    case let .infrast(config) = task,
+                    config.mode == .custom,
+                    config.auto_advance_plan_index,
+                    config.plan_index >= 0,
                     let plan = try? MAAInfrast(path: config.filename),
                     plan.plans.count > 0
                 {
