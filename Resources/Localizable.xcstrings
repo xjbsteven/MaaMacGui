@@ -943,6 +943,26 @@
         }
       }
     },
+    "RoguelikeCustomGoodsBought %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已购买藏品：%@"
+          }
+        }
+      }
+    },
+    "RoguelikeCustomGoodsCannotAfford %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "发现目标藏品「%@」但源石锭不足，已暂停，请手动处理"
+          }
+        }
+      }
+    },
     "GameCrash" : {
       "localizations" : {
         "ko" : {

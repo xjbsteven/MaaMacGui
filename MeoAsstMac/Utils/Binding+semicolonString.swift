@@ -12,9 +12,10 @@ extension Binding {
         Binding<String> {
             wrappedValue[keyPath: keyPath].joined(separator: "; ")
         } set: { newValue in
-            wrappedValue[keyPath: keyPath] = newValue.split(separator: ";").map {
-                $0.trimmingCharacters(in: .whitespaces)
-            }
+            wrappedValue[keyPath: keyPath] = newValue
+                .split { $0 == ";" || $0.isNewline }
+                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                .filter { !$0.isEmpty }
         }
     }
 }
