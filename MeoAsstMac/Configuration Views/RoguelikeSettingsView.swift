@@ -151,13 +151,47 @@ struct RoguelikeSettingsView: View {
         }
 
         if config.theme == .Mizuki {
-            Toggle("刷新商店（指路鳞）", isOn: $config.refresh_trader_with_dice)
+            if config.mode != .collectibleFarm {
+                Toggle("刷新商店（指路鳞）", isOn: $config.refresh_trader_with_dice)
+            }
+            if config.mode == .collectibleFarm {
+                Text("藏品名")
+                Text("分号或换行分隔，顺序即优先级；仅刷第一层商店")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text("招募：指定开局照旧；先看当前页六星（按优先级），没有再右滑招三星")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text("商店刷新前后截图保存在 debug/roguelike/collectibleFarm，可事后核对漏识别")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                TextField(
+                    "",
+                    text: $config.semicolonString(for: \.refresh_trader_shopping_list),
+                    prompt: Text("例如：皇家利口酒;银餐叉"),
+                    axis: .vertical)
+                .labelsHidden()
+                .lineLimit(2...4)
+            }
         }
 
         if config.theme == .Sami {
             HStack {
                 Toggle("使用密文板", isOn: $config.use_foldartal)
                 Toggle("检测获取的坍缩范式", isOn: $config.check_collapsal_paradigms)
+            }
+            if config.mode == .collectibleFarm {
+                Text("藏品名")
+                Text("分号或换行分隔，顺序即优先级")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                TextField(
+                    "",
+                    text: $config.semicolonString(for: \.refresh_trader_shopping_list),
+                    prompt: Text("例如：金色酒杯"),
+                    axis: .vertical)
+                .labelsHidden()
+                .lineLimit(2...4)
             }
             if config.mode == .collectible {
                 TextField("一层远见密文板", text: $config.first_floor_foldartal)
@@ -236,6 +270,8 @@ extension RoguelikeConfiguration.Mode {
             String(localized: "刷常乐节点，第一层进洞，找不到需要的节点就重开")
         case (.babyAnimal, _):
             String(localized: "刷襁褓动物")
+        case (.collectibleFarm, _):
+            String(localized: "刷目标藏品：商店 OCR/刷新购买，战后几选一优先列表；打到失败或通关")
         }
     }
 }

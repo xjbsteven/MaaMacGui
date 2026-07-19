@@ -531,6 +531,16 @@ extension MAAViewModel {
                 logInfo("GainParadigm \(cur)")
             }
 
+        case "RoguelikeCustomGoodsBought":
+            if let item = subTaskDetails["item"].string {
+                logRare("RoguelikeCustomGoodsBought \(item)")
+            }
+
+        case "RoguelikeCustomGoodsCannotAfford":
+            if let item = subTaskDetails["item"].string {
+                logError("RoguelikeCustomGoodsCannotAfford \(item)")
+            }
+
         case "UseMedicine":
             if let isExpiringMedicine = subTaskDetails["is_expiring"].bool,
                 let medicineCount = subTaskDetails["count"].int
