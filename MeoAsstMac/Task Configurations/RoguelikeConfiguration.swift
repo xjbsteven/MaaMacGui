@@ -25,6 +25,10 @@ struct RoguelikeConfiguration: MAATaskConfiguration {
         case squad = 6
         /// 深入调查，尽可能稳定地打更多层数，不期而遇采用激进策略
         case exploration = 7
+        /// 刷目标藏品：商店 OCR/刷新购买；战后几选一优先列表；找不到则离店继续，打到失败或通关
+        ///
+        /// 当前仅水月主题
+        case collectibleFarm = 8
     }
 
     enum Theme: String, CaseIterable, Codable {
@@ -103,6 +107,10 @@ struct RoguelikeConfiguration: MAATaskConfiguration {
     ///
     /// 仅适用于 `Mizuki` 主题，用于刷指路鳞
     var refresh_trader_with_dice: Bool
+    /// 刷藏品策略的目标藏品名列表，顺序即优先级，可选，默认值 `[]`
+    ///
+    /// 仅在模式为 `collectibleFarm` 时有效且必填
+    var refresh_trader_shopping_list: [String]
     /// 希望在第一层远见阶段得到的密文版，若成功凹到则停止任务，可选
     ///
     /// 仅适用于 `Sami` 主题
@@ -187,6 +195,7 @@ struct RoguelikeConfiguration: MAATaskConfiguration {
         let start_with_elite_two: Bool?
         let only_start_with_elite_two: Bool?
         let refresh_trader_with_dice: Bool?
+        let refresh_trader_shopping_list: [String]?
         let first_floor_foldartal: String?
         let start_foldartal_list: [String]?
         let start_with_two_ideas: Bool?
@@ -223,12 +232,14 @@ extension RoguelikeConfiguration.Theme {
     }
 
     var modes: [RoguelikeConfiguration.Mode] {
-        let commonModes = [RoguelikeConfiguration.Mode.exp, .investment, .collectible, .squad, .exploration]
-        if self == .Sami {
-            return commonModes + [.clpPds]
-        } else {
-            return commonModes
+        var modes = [RoguelikeConfiguration.Mode.exp, .investment, .collectible, .squad, .exploration]
+        if self == .Mizuki {
+            modes.insert(.collectibleFarm, at: 2) // 刷源石锭之后
         }
+        if self == .Sami {
+            modes.append(.clpPds)
+        }
+        return modes
     }
 }
 
@@ -247,6 +258,8 @@ extension RoguelikeConfiguration.Mode {
             String(localized: "月度小队")
         case .exploration:
             String(localized: "深入调查")
+        case .collectibleFarm:
+            String(localized: "刷藏品")
         }
     }
 }
@@ -301,7 +314,11 @@ extension RoguelikeConfiguration.Params {
         self.start_with_elite_two = config.mode == .collectible ? config.start_with_elite_two : nil
         self.only_start_with_elite_two =
             config.mode == .collectible && config.start_with_elite_two ? config.only_start_with_elite_two : nil
-        self.refresh_trader_with_dice = config.theme == .Mizuki ? config.refresh_trader_with_dice : nil
+        self.refresh_trader_with_dice =
+            config.theme == .Mizuki && config.mode != .collectibleFarm ? config.refresh_trader_with_dice : nil
+        self.refresh_trader_shopping_list =
+            config.theme == .Mizuki && config.mode == .collectibleFarm && !config.refresh_trader_shopping_list.isEmpty
+            ? config.refresh_trader_shopping_list : nil
         self.first_floor_foldartal = config.theme == .Sami ? config.first_floor_foldartal : nil
         self.start_foldartal_list =
             config.theme == .Sami && config.mode == .collectible && config.squad == "生活至上分队"
@@ -347,6 +364,8 @@ extension RoguelikeConfiguration {
             try container.decodeIfPresent(Bool.self, forKey: .only_start_with_elite_two) ?? false
         self.refresh_trader_with_dice =
             try container.decodeIfPresent(Bool.self, forKey: .refresh_trader_with_dice) ?? false
+        self.refresh_trader_shopping_list =
+            try container.decodeIfPresent([String].self, forKey: .refresh_trader_shopping_list) ?? []
         self.first_floor_foldartal = try container.decodeIfPresent(String.self, forKey: .first_floor_foldartal) ?? ""
         self.start_foldartal_list = try container.decodeIfPresent([String].self, forKey: .start_foldartal_list) ?? []
         self.start_with_two_ideas = try container.decodeIfPresent(Bool.self, forKey: .start_with_two_ideas) ?? false

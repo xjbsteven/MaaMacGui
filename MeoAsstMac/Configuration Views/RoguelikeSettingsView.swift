@@ -120,9 +120,12 @@ struct RoguelikeSettingsView: View {
         }
 
         HStack {
-            Toggle("满级后自动停止", isOn: $config.stop_at_max_level)
-            if config.theme != .Phantom {
-                Toggle("在第五层BOSS前暂停", isOn: $config.stop_at_final_boss)
+            // 刷藏品只刷一层商店后重开，不需要这两项停止条件
+            if config.mode != .collectibleFarm {
+                Toggle("满级后自动停止", isOn: $config.stop_at_max_level)
+                if config.theme != .Phantom {
+                    Toggle("在第五层BOSS前暂停", isOn: $config.stop_at_final_boss)
+                }
             }
             if config.mode == .investment {
                 Toggle("投资后进二层", isOn: $config.investment_with_more_score)
@@ -142,7 +145,28 @@ struct RoguelikeSettingsView: View {
         }
 
         if config.theme == .Mizuki {
-            Toggle("刷新商店（指路鳞）", isOn: $config.refresh_trader_with_dice)
+            if config.mode != .collectibleFarm {
+                Toggle("刷新商店（指路鳞）", isOn: $config.refresh_trader_with_dice)
+            }
+            if config.mode == .collectibleFarm {
+                Text("藏品名")
+                Text("分号或换行分隔，顺序即优先级；仅刷第一层商店")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text("招募：指定开局照旧；先看当前页六星（按优先级），没有再右滑招三星")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text("商店刷新前后截图保存在 debug/roguelike/collectibleFarm，可事后核对漏识别")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                TextField(
+                    "",
+                    text: $config.semicolonString(for: \.refresh_trader_shopping_list),
+                    prompt: Text("例如：皇家利口酒;银餐叉"),
+                    axis: .vertical)
+                .labelsHidden()
+                .lineLimit(2...4)
+            }
         }
 
         if config.theme == .Sami {
@@ -205,6 +229,8 @@ extension RoguelikeConfiguration.Mode {
             String(localized: "刷月度小队，到达第五层后直接退出")
         case .exploration:
             String(localized: "刷深入调查，尽可能稳定地打更多层数")
+        case .collectibleFarm:
+            String(localized: "刷目标藏品：商店 OCR/刷新购买，战后几选一优先列表；打到失败或通关")
         }
     }
 }
