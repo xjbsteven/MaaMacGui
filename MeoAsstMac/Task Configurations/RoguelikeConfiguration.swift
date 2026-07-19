@@ -25,7 +25,7 @@ struct RoguelikeConfiguration: MAATaskConfiguration {
         case squad = 6
         /// 深入调查，尽可能稳定地打更多层数，不期而遇采用激进策略
         case exploration = 7
-        /// 刷目标藏品：商店 OCR/刷新购买；战后几选一优先列表；找不到则离店继续，打到失败或通关
+        /// 刷目标藏品：商店 OCR/刷新购买，找不到则离店继续，打到失败或通关
         ///
         /// 当前仅水月主题
         case collectibleFarm = 8

@@ -230,7 +230,7 @@ extension RoguelikeConfiguration.Mode {
         case .exploration:
             String(localized: "刷深入调查，尽可能稳定地打更多层数")
         case .collectibleFarm:
-            String(localized: "刷目标藏品：商店 OCR/刷新购买，战后几选一优先列表；打到失败或通关")
+            String(localized: "刷目标藏品：商店 OCR/刷新购买，找不到则离店继续；打到失败或通关")
         }
     }
 }
