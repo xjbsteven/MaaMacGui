@@ -25,7 +25,6 @@ struct RoguelikeConfiguration: MAATaskConfiguration {
         case squad = 6
         /// 深入调查，尽可能稳定地打更多层数，不期而遇采用激进策略
         case exploration = 7
-        case exploration = 7
         /// 刷目标藏品：商店 OCR/刷新购买；战后几选一优先列表；找不到则离店继续，打到失败或通关
         ///
         /// 水月 / 萨米主题
@@ -466,10 +465,11 @@ extension RoguelikeConfiguration.Params {
         self.only_start_with_elite_two = config.checkedOnlyStartWithEliteTwo
         self.refresh_trader_with_dice =
             config.theme == .Mizuki && config.mode != .collectibleFarm ? config.refresh_trader_with_dice : nil
+        let shoppingList = config.refresh_trader_shopping_list.filter { !$0.isEmpty }
         self.refresh_trader_shopping_list =
             (config.theme == .Mizuki || config.theme == .Sami) && config.mode == .collectibleFarm
-            && !config.refresh_trader_shopping_list.isEmpty
-            ? config.refresh_trader_shopping_list : nil
+            && !shoppingList.isEmpty
+            ? shoppingList : nil
         self.first_floor_foldartal = config.checkedFirstFloorFoldartal
         self.start_foldartal_list = config.checkedStartFoldartalList
         self.use_foldartal = config.theme == .Sami ? config.use_foldartal : nil
