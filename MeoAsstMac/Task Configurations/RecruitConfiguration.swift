@@ -20,6 +20,7 @@ struct RecruitConfiguration: MAATaskConfiguration {
     var expedite: Bool
     var expedite_times: Int
     var skip_robot: Bool
+    var force_confirm_to_meet_times: Bool = false
     var recruitment_time: [String: Int]
     var report_to_penguin: Bool
     var penguin_id: String
@@ -58,7 +59,7 @@ struct RecruitConfiguration: MAATaskConfiguration {
         .init(
             refresh: false, select: [4, 5, 6], confirm: [-1], first_tags: [],
             extra_tags_mode: 0, times: 0, set_time: true, expedite: false,
-            expedite_times: 0, skip_robot: true,
+            expedite_times: 0, skip_robot: true, force_confirm_to_meet_times: false,
             recruitment_time: [
                 "3": 540, "4": 540, "5": 540, "6": 540,
             ],
@@ -80,6 +81,8 @@ extension RecruitConfiguration {
         self.expedite = try container.decodeIfPresent(Bool.self, forKey: .expedite) ?? false
         self.expedite_times = try container.decodeIfPresent(Int.self, forKey: .expedite_times) ?? 999
         self.skip_robot = try container.decodeIfPresent(Bool.self, forKey: .skip_robot) ?? true
+        self.force_confirm_to_meet_times =
+            try container.decodeIfPresent(Bool.self, forKey: .force_confirm_to_meet_times) ?? false
         self.recruitment_time =
             try container.decodeIfPresent([String: Int].self, forKey: .recruitment_time) ?? [
                 "3": 540, "4": 540, "5": 540, "6": 540,
