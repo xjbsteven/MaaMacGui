@@ -25,7 +25,7 @@ struct RoguelikeConfiguration: MAATaskConfiguration {
         case squad = 6
         /// 深入调查，尽可能稳定地打更多层数，不期而遇采用激进策略
         case exploration = 7
-        /// 刷目标藏品：商店 OCR/刷新购买，找不到则离店继续，打到失败或通关
+        /// 刷目标藏品：商店 OCR/刷新；战后几选一在原 GetDropSelect 上优先列表；打到失败或通关
         ///
         /// 当前仅水月主题
         case collectibleFarm = 8
@@ -233,7 +233,7 @@ extension RoguelikeConfiguration.Theme {
 
     var modes: [RoguelikeConfiguration.Mode] {
         var modes = [RoguelikeConfiguration.Mode.exp, .investment, .collectible, .squad, .exploration]
-        if self == .Mizuki {
+        if self == .Mizuki || self == .Sami {
             modes.insert(.collectibleFarm, at: 2) // 刷源石锭之后
         }
         if self == .Sami {
@@ -316,19 +316,22 @@ extension RoguelikeConfiguration.Params {
             config.mode == .collectible && config.start_with_elite_two ? config.only_start_with_elite_two : nil
         self.refresh_trader_with_dice =
             config.theme == .Mizuki && config.mode != .collectibleFarm ? config.refresh_trader_with_dice : nil
+        let shoppingList = config.refresh_trader_shopping_list.filter { !$0.isEmpty }
         self.refresh_trader_shopping_list =
-            config.theme == .Mizuki && config.mode == .collectibleFarm && !config.refresh_trader_shopping_list.isEmpty
-            ? config.refresh_trader_shopping_list : nil
+            (config.theme == .Mizuki || config.theme == .Sami) && config.mode == .collectibleFarm
+            && !shoppingList.isEmpty
+            ? shoppingList : nil
         self.first_floor_foldartal = config.theme == .Sami ? config.first_floor_foldartal : nil
         self.start_foldartal_list =
             config.theme == .Sami && config.mode == .collectible && config.squad == "生活至上分队"
-            ? config.start_foldartal_list : nil
+            ? config.start_foldartal_list.filter { !$0.isEmpty } : nil
         self.start_with_two_ideas =
             config.theme == .Sarkaz && config.mode == .collectible ? config.start_with_two_ideas : nil
         self.use_foldartal = config.theme == .Sami ? config.use_foldartal : nil
         self.check_collapsal_paradigms = config.theme == .Sami ? config.check_collapsal_paradigms : nil
         self.expected_collapsal_paradigms =
-            config.theme == .Sami && config.mode == .clpPds ? config.expected_collapsal_paradigms : nil
+            config.theme == .Sami && config.mode == .clpPds
+            ? config.expected_collapsal_paradigms.filter { !$0.isEmpty } : nil
         self.monthly_squad_auto_iterate = config.mode == .squad ? config.monthly_squad_auto_iterate : nil
         self.monthly_squad_check_comms =
             config.mode == .squad && config.monthly_squad_auto_iterate ? config.monthly_squad_check_comms : nil

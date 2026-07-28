@@ -26,6 +26,8 @@ struct RecruitSettingsView: View {
                 }
             }
 
+            Toggle("优先保证最大招募数量", isOn: $config.force_confirm_to_meet_times)
+
             Toggle("手动确认1星", isOn: $config.skip_robot)
             Toggle("自动确认3星", isOn: autoConfirm(level: 3))
             Toggle("自动确认4星", isOn: autoConfirm(level: 4))

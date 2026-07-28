@@ -144,29 +144,34 @@ struct RoguelikeSettingsView: View {
             }
         }
 
-        if config.theme == .Mizuki {
-            if config.mode != .collectibleFarm {
-                Toggle("刷新商店（指路鳞）", isOn: $config.refresh_trader_with_dice)
+        if config.theme == .Mizuki, config.mode != .collectibleFarm {
+            Toggle("刷新商店（指路鳞）", isOn: $config.refresh_trader_with_dice)
+        }
+
+        if config.mode == .collectibleFarm {
+            Text("藏品名")
+            Text("分号或换行分隔，顺序即优先级")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text("招募：指定开局照旧；先看当前页六星（按优先级），没有再右滑招三星")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            if config.theme == .Sami {
+                Text("萨米：商店免费刷新；勾选「投资源石锭」时买完列表会再投资，不买常规货架商品")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            } else {
+                Text("水月商店使用指路鳞刷新；截图保存在 debug/roguelike/collectibleFarm")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
-            if config.mode == .collectibleFarm {
-                Text("藏品名")
-                Text("分号或换行分隔，顺序即优先级；仅刷第一层商店")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text("招募：指定开局照旧；先看当前页六星（按优先级），没有再右滑招三星")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text("商店刷新前后截图保存在 debug/roguelike/collectibleFarm，可事后核对漏识别")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                TextField(
-                    "",
-                    text: $config.semicolonString(for: \.refresh_trader_shopping_list),
-                    prompt: Text("例如：皇家利口酒;银餐叉"),
-                    axis: .vertical)
-                .labelsHidden()
-                .lineLimit(2...4)
-            }
+            TextField(
+                "",
+                text: $config.semicolonString(for: \.refresh_trader_shopping_list),
+                prompt: Text("例如：皇家利口酒;银餐叉"),
+                axis: .vertical)
+            .labelsHidden()
+            .lineLimit(2...4)
         }
 
         if config.theme == .Sami {
@@ -230,7 +235,7 @@ extension RoguelikeConfiguration.Mode {
         case .exploration:
             String(localized: "刷深入调查，尽可能稳定地打更多层数")
         case .collectibleFarm:
-            String(localized: "刷目标藏品：商店 OCR/刷新购买，找不到则离店继续；打到失败或通关")
+            String(localized: "刷目标藏品：商店 OCR/刷新；战后几选一优先列表（不改原领取链）；打到失败或通关")
         }
     }
 }
