@@ -12,6 +12,7 @@ struct MiniGameView: View {
     @SceneStorage("selectedMiniGame") private var selection = MiniGameOption.sideStoryStore.taskName
     @State private var selectedGame = MiniGameOption.sideStoryStore.tag
     @State private var taskParams: Any?
+    @State private var interactiveExhibitionTargets = ""
 
     var body: some View {
         VStack(spacing: 20) {
@@ -49,6 +50,16 @@ struct MiniGameView: View {
             switch selectedGame.taskName {
             case "MiniGame@PixelPaint@Begin":
                 PixelPaintView(params: $taskParams)
+            case let name where name.hasPrefix("MiniGame@InteractiveExhibition"):
+                VStack(alignment: .leading, spacing: 12) {
+                    TextField("指定奇象（留空=未收录；多个用逗号）", text: $interactiveExhibitionTargets)
+                        .textFieldStyle(.roundedBorder)
+                    ScrollView {
+                        LazyVStack(alignment: .leading) {
+                            Text(selectedGame.instructions)
+                        }
+                    }
+                }
             default:
                 ScrollView {
                     LazyVStack {
@@ -85,8 +96,26 @@ struct MiniGameView: View {
 
     private func startMiniGame() {
         Task {
-            try await viewModel.miniGame(name: selectedGame.taskName, params: taskParams)
+            try await viewModel.miniGame(name: selectedGame.taskName, params: paramsForCurrentGame())
         }
+    }
+
+    private func paramsForCurrentGame() -> Any? {
+        guard selectedGame.taskName.hasPrefix("MiniGame@InteractiveExhibition") else {
+            return taskParams
+        }
+        let targets = interactiveExhibitionTargets
+            .split(whereSeparator: { ",，;； \n\t".contains($0) })
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+        guard !targets.isEmpty else {
+            return nil
+        }
+        return [
+            "interactive_exhibition": [
+                "targets": Array(targets)
+            ]
+        ]
     }
 }
 
